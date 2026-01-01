@@ -1,6 +1,6 @@
-# hello-agent-client
+# PR Agent Client
 
-OpenHands TypeScript client example that runs an agent task.
+OpenHands TypeScript client for automated PR creation tasks.
 
 ## Prerequisites
 
@@ -25,7 +25,13 @@ LLM_API_KEY=your-llm-api-key
 ## Run
 
 ```bash
-bun run make-pr.ts
+bun make-pr.ts <workspace-dir>
+```
+
+Example:
+
+```bash
+bun make-pr.ts /path/to/your/git/repo
 ```
 
 ## Patches

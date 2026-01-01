@@ -1,5 +1,5 @@
 {
-  "name": "hello-agent-client",
+  "name": "pr-agent-client",
   "module": "index.ts",
   "type": "module",
   "private": true,
