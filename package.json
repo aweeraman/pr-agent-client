@@ -1,0 +1,19 @@
+{
+  "name": "hello-agent-client",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "postinstall": "./patches/apply.sh"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "dotenv": "^17.2.3"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "@openhands/typescript-client": "git+https://github.com/OpenHands/typescript-client.git"
+  }
+}
