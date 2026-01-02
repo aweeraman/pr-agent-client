@@ -1,5 +1,62 @@
 import { Conversation, Agent, Workspace } from "@openhands/typescript-client";
-import { formatEvent, formatStatus, waitForCompletion } from "./utils";
+import { formatStatus, waitForCompletion } from "./utils";
+
+function printEvent(event: any): void {
+  switch (event.kind) {
+    case "MessageEvent": {
+      const msg = event.llm_message;
+      if (!msg) return;
+      const role = msg.role?.toUpperCase() || "MESSAGE";
+      const content = msg.content
+        ?.map((c: any) => c.text || (c.image_url ? "[image]" : ""))
+        .filter(Boolean)
+        .join("\n");
+      if (content) {
+        console.log(`\n[${role}]\n${content}`);
+      }
+      break;
+    }
+    case "ActionEvent": {
+      const action = event.action;
+      if (!action) return;
+      const actionType = action.type || action.kind || "action";
+      if (action.thought) {
+        console.log(`\n[THOUGHT] ${action.thought}`);
+      }
+      if (action.command) {
+        console.log(`\n[ACTION:${actionType}] $ ${action.command}`);
+      } else if (action.path) {
+        console.log(`\n[ACTION:${actionType}] ${action.path}`);
+      } else if (!action.thought) {
+        console.log(`\n[ACTION:${actionType}]`);
+      }
+      break;
+    }
+    case "ObservationEvent": {
+      const toolName = event.tool_name || "tool";
+      const obs = event.observation;
+      if (typeof obs === "string") {
+        console.log(`\n[OUTPUT:${toolName}]\n${obs}`);
+      } else if (obs?.output) {
+        console.log(`\n[OUTPUT:${toolName}]\n${obs.output}`);
+      } else {
+        console.log(`\n[OUTPUT:${toolName}] (completed)`);
+      }
+      break;
+    }
+    case "AgentErrorEvent": {
+      const errMsg = event.observation?.error || event.observation?.message || "Unknown error";
+      console.log(`\n[ERROR] ${errMsg}`);
+      break;
+    }
+    case "PauseEvent":
+      console.log("\n[PAUSED] Agent execution paused");
+      break;
+    case "SystemPromptEvent":
+      console.log("\n[SYSTEM] System prompt initialized");
+      break;
+  }
+}
 
 async function main() {
   const workingDir = process.argv[2];
@@ -31,8 +88,7 @@ async function main() {
 
   const conversation = new Conversation(agent, workspace, {
     callback: (event) => {
-      const formatted = formatEvent(event);
-      if (formatted) console.log(formatted);
+      printEvent(event);
     },
   });
 
